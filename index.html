@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برنامج صيف الشارقة الرياضي - نادي خورفكان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="main-header">
+            <div class="logos-container">
+                <div class="logo-box" style="border: none; cursor: default; background-color: transparent; box-shadow: none;">
+                    <img src="club_logo.png.png" alt="شعار النادي" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                
+                <div class="header-titles">
+                    <h1>برنامج صيف الشارقة الرياضي</h1>
+                    <h2>نادي خورفكان الرياضي الثقافي</h2>
+                </div>
+
+                <div class="logo-box" style="border: none; cursor: default; background-color: transparent; box-shadow: none;">
+                    <img src="program_logo.png.jpg" alt="شعار البرنامج" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+            </div>
+            
+            <nav class="main-nav">
+                <button class="nav-btn active" id="btn-booking-portal">بوابة التسجيل</button>
+                <button class="nav-btn" id="btn-admin-portal">إدارة التطبيق</button>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <!-- Booking Portal Section -->
+            <section id="section-booking" class="page-section active">
+                <div class="card booking-card">
+                    <h3>نموذج حجز منتسب جديد</h3>
+                    <form id="bookingForm">
+                        <div class="form-group">
+                            <label for="participantName">الاسم الرباعي</label>
+                            <input type="text" id="participantName" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="participantPhone">رقم الهاتف</label>
+                                <input type="tel" id="participantPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="participantAge">العمر</label>
+                                <input type="number" id="participantAge" required min="5" max="30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="interestCategory">نوع الاهتمام</label>
+                            <select id="interestCategory" required>
+                                <option value="">اختر نوع الاهتمام...</option>
+                                <option value="برامج">البرامج الرياضية</option>
+                                <option value="رحلات_ميدانية">الرحلات الميدانية</option>
+                                <option value="رحلات_ترفيهية">الرحلات الترفيهية</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectedActivity">النشاط المطلوب</label>
+                            <select id="selectedActivity" required disabled>
+                                <option value="">يرجى اختيار نوع الاهتمام أولاً</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="participantNotes">ملاحظات إضافية (اختياري)</label>
+                            <textarea id="participantNotes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">تأكيد الحجز</button>
+                    </form>
+                    <div id="bookingSuccess" class="alert alert-success hidden">
+                        تم تسجيل حجزك بنجاح! رقم الحجز: <span id="bookingRef"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Login Section -->
+            <section id="section-admin-login" class="page-section hidden">
+                <div class="card login-card" style="max-width: 500px; margin: 0 auto;">
+                    <h3>تسجيل دخول الإدارة</h3>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="adminUser">اسم المستخدم</label>
+                            <input type="text" id="adminUser" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPass">كلمة المرور</label>
+                            <input type="password" id="adminPass" required>
+                        </div>
+                        <div id="loginError" class="alert alert-danger hidden">بيانات الدخول غير صحيحة</div>
+                        <button type="submit" class="btn btn-primary">دخول</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Admin Dashboard Section -->
+            <section id="section-admin-dashboard" class="page-section hidden">
+                <div class="admin-header">
+                    <h2>لوحة التحكم والمؤشرات</h2>
+                    <button id="btnLogout" class="btn btn-outline">تسجيل الخروج</button>
+                </div>
+
+                <!-- KPIs -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <h4>إجمالي المسجلين</h4>
+                        <div class="kpi-value" id="kpiTotalParticipants">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>البرامج الرياضية</h4>
+                        <div class="kpi-value" id="kpiPrograms">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>الرحلات الميدانية</h4>
+                        <div class="kpi-value" id="kpiFieldTrips">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>الرحلات الترفيهية</h4>
+                        <div class="kpi-value" id="kpiRecTrips">0</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Charts Area -->
+                    <div class="card chart-card">
+                        <h3>توزيع المشاركين حسب الفئة</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+
+                    <!-- Manage Activities -->
+                    <div class="card add-activity-card">
+                        <h3>إضافة نشاط جديد</h3>
+                        <form id="activityForm">
+                            <div class="form-group">
+                                <label for="actName">اسم النشاط</label>
+                                <input type="text" id="actName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="actCategory">نوع النشاط</label>
+                                <select id="actCategory" required>
+                                    <option value="برامج">البرامج الرياضية</option>
+                                    <option value="رحلات_ميدانية">الرحلات الميدانية</option>
+                                    <option value="رحلات_ترفيهية">الرحلات الترفيهية</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="actDate">التاريخ</label>
+                                    <input type="date" id="actDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="actTime">الوقت</label>
+                                    <input type="time" id="actTime" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="actLocation">المكان</label>
+                                <input type="text" id="actLocation" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="actNotes">ملاحظات</label>
+                                <input type="text" id="actNotes">
+                            </div>
+                            <button type="submit" class="btn btn-secondary">إضافة النشاط</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bookings Table -->
+                <div class="card table-card">
+                    <div class="table-header-actions">
+                        <h3>سجل المشاركين والحجوزات</h3>
+                        <button id="btnExportExcel" class="btn btn-success">تصدير إلى Excel</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="bookingsTable">
+                            <thead>
+                                <tr>
+                                    <th>رقم الحجز</th>
+                                    <th>الاسم</th>
+                                    <th>العمر</th>
+                                    <th>الهاتف</th>
+                                    <th>الفئة</th>
+                                    <th>النشاط</th>
+                                    <th>التاريخ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Activities List Table -->
+                <div class="card table-card mt-4">
+                    <h3>الأنشطة المتاحة</h3>
+                    <div class="table-responsive">
+                        <table id="activitiesTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم النشاط</th>
+                                    <th>الفئة</th>
+                                    <th>المكان</th>
+                                    <th>التاريخ/الوقت</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activitiesTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
